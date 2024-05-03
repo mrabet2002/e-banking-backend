@@ -11,9 +11,10 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerDto {
-    private Long id;
-    private String name;
-    private String email;
+public class TransferRequestDTO {
+    private String fromAccountId;
+    private String toAccountId;
+    private Double amount;
+    private String description;
     private Long createdBy;
 }

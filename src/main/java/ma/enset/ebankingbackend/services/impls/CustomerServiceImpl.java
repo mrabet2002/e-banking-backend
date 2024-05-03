@@ -3,6 +3,7 @@ package ma.enset.ebankingbackend.services.impls;
 import lombok.RequiredArgsConstructor;
 import ma.enset.ebankingbackend.dtos.CustomerDto;
 import ma.enset.ebankingbackend.entities.Customer;
+import ma.enset.ebankingbackend.exceptions.RecordNotFoundException;
 import ma.enset.ebankingbackend.mappers.CustomerMapper;
 import ma.enset.ebankingbackend.repos.CustomerRepository;
 import ma.enset.ebankingbackend.services.interfaces.CustomerService;
@@ -43,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer getEntity(Long id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new RecordNotFoundException("Customer not found"));
     }
 
     @Override

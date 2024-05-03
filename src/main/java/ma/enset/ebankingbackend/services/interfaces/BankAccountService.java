@@ -13,7 +13,6 @@ import ma.enset.ebankingbackend.enums.AccountStatus;
 import org.springframework.data.domain.Page;
 
 public interface BankAccountService {
-    //    CRUD Operations
     AccountDto createCurrentAccount(CreateCurrentAccountDto accountDto);
 
     SavingAccount createSavingAccount(CreateSavingAccountDto accountDto);

@@ -7,6 +7,8 @@ import ma.enset.ebankingbackend.dtos.CustomerDto;
 import ma.enset.ebankingbackend.entities.Customer;
 import ma.enset.ebankingbackend.services.interfaces.CustomerService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,10 +20,10 @@ public class CustomerRestController {
     private final CustomerService customerService;
 
     @GetMapping("")
-    public Page<CustomerDto> getAll(
+    public ResponseEntity<Page<CustomerDto>> getAll(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size) {
-        return customerService.getAll(page, size);
+        return ResponseEntity.ok(customerService.getAll(page, size));
     }
 
     @GetMapping("/search")
@@ -34,24 +36,26 @@ public class CustomerRestController {
     }
 
     @GetMapping("/{id}")
-    public CustomerDto getCustomer(
+    public ResponseEntity<CustomerDto> getCustomer(
             @PathVariable(name = "id") Long customerId
     ) {
-        return customerService.get(customerId);
+        return ResponseEntity.ok(customerService.get(customerId));
     }
 
     @PostMapping("")
-    public CustomerDto saveCustomer(@RequestBody Customer customer) {
-        return customerService.add(customer);
+    public ResponseEntity<CustomerDto> saveCustomer(@RequestBody Customer customer) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(customerService.add(customer));
     }
 
     @PutMapping("/{id}")
-    public void updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+    public ResponseEntity<Void> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
         customerService.update(id, customer);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

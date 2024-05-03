@@ -8,6 +8,7 @@ import ma.enset.ebankingbackend.dtos.account.AccountDto;
 import ma.enset.ebankingbackend.dtos.account.AccountHistoryDto;
 import ma.enset.ebankingbackend.services.interfaces.BankAccountService;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,40 +27,43 @@ public class AccountRestController {
     private final BankAccountService bankAccountService;
 
     @GetMapping("/{accountId}")
-    public AccountDto getBankAccount(@PathVariable String accountId) {
-        return bankAccountService.get(accountId);
+    public ResponseEntity<AccountDto> getBankAccount(@PathVariable String accountId) {
+        return ResponseEntity.ok(bankAccountService.get(accountId));
     }
 
     @GetMapping
-    public Page<AccountDto> listAccounts(
+    public ResponseEntity<Page<AccountDto>> listAccounts(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size) {
-        return bankAccountService.getAll(page, size);
+        return ResponseEntity.ok(bankAccountService.getAll(page, size));
     }
 
     @GetMapping("/{accountId}/operations")
-    public AccountHistoryDto getAccountHistory(
+    public ResponseEntity<AccountHistoryDto> getAccountHistory(
             @PathVariable String accountId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "5") int size) {
-        return bankAccountService.getAccountHistory(accountId, page, size);
+        return ResponseEntity.ok(bankAccountService.getAccountHistory(accountId, page, size));
     }
 
     @PostMapping("/debit")
-    public void debit(@RequestBody CreateOperationDto operationDto) {
+    public ResponseEntity<Void> debit(@RequestBody CreateOperationDto operationDto) {
         this.bankAccountService.debit(operationDto);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/credit")
-    public void credit(@RequestBody CreateOperationDto operationDto) {
+    public ResponseEntity<Void> credit(@RequestBody CreateOperationDto operationDto) {
         this.bankAccountService.credit(operationDto);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/transfer")
-    public void transfer(@RequestBody TransferRequestDTO transferRequestDTO) {
+    public ResponseEntity<Void> transfer(@RequestBody TransferRequestDTO transferRequestDTO) {
         this.bankAccountService.transfer(
                 transferRequestDTO.getFromAccountId(),
                 transferRequestDTO.getToAccountId(),
                 transferRequestDTO.getAmount());
+        return ResponseEntity.noContent().build();
     }
 }

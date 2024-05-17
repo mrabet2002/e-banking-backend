@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountDto {
-    private Long id;
+    private String id;
     private CustomerDto customer;
     private String currency;
     private Double balance;

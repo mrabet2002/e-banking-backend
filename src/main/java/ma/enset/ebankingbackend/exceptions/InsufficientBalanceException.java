@@ -1,6 +1,6 @@
 package ma.enset.ebankingbackend.exceptions;
 
-public class InsufficientBalanceException extends BadeRequestException {
+public class InsufficientBalanceException extends BadRequestException {
     public InsufficientBalanceException(String message) {
         super(message);
     }

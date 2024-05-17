@@ -9,6 +9,7 @@ import lombok.ToString;
 import ma.enset.ebankingbackend.dtos.CustomerDto;
 import ma.enset.ebankingbackend.dtos.OperationDto;
 import ma.enset.ebankingbackend.entities.Operation;
+import ma.enset.ebankingbackend.enums.AccountStatus;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -23,5 +24,7 @@ public class AccountHistoryDto {
     private String id;
     private Page<OperationDto> operations;
     private Double balance;
+    private String currency;
+    private AccountStatus status;
     private CustomerDto customer;
 }

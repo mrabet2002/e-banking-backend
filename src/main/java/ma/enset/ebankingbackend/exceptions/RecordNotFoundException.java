@@ -1,12 +1,14 @@
 package ma.enset.ebankingbackend.exceptions;
 
-public class RecordNotFoundException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class RecordNotFoundException extends GlobalApiException {
     public RecordNotFoundException(String message) {
-        super(message);
+        super(message, HttpStatus.NOT_FOUND);
     }
 
 //    Default message
     public RecordNotFoundException() {
-        super("Record not found!");
+        super("Record not found!", HttpStatus.NOT_FOUND);
     }
 }

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ma.enset.ebankingbackend.enums.OperationType;
 
 @Getter
 @Setter
@@ -14,9 +13,6 @@ import ma.enset.ebankingbackend.enums.OperationType;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateOperationDto {
-    private Double amount;
-    private String description;
-    private String accountId;
-    private Long createdBy;
+public class LoginResponse {
+    private String accessToken;
 }

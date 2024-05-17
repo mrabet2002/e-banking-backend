@@ -18,6 +18,7 @@ import ma.enset.ebankingbackend.enums.OperationType;
 import ma.enset.ebankingbackend.exceptions.InsufficientBalanceException;
 import ma.enset.ebankingbackend.exceptions.RecordNotFoundException;
 import ma.enset.ebankingbackend.mappers.BankAccountMapper;
+import ma.enset.ebankingbackend.mappers.CustomerMapper;
 import ma.enset.ebankingbackend.mappers.OperationMapper;
 import ma.enset.ebankingbackend.repos.BankAccountRepository;
 import ma.enset.ebankingbackend.repos.OperationRepository;
@@ -38,6 +39,7 @@ public class BankAccountServiceImpl implements BankAccountService {
     private final BankAccountMapper bankAccountMapper;
     private final CustomerService customerService;
     private final OperationMapper operationMapper;
+    private final CustomerMapper customerMapper;
 
     @Override
     public AccountDto createCurrentAccount(CreateCurrentAccountDto accountDto) {
@@ -97,14 +99,16 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public Page<CurrentAccountDto> getCurrentAccounts(int page, int size) {
-        Page<CurrentAccount> currentAccounts = bankAccountRepository.findAll(PageRequest.of(page, size));
-        return currentAccounts.map(bankAccountMapper::toDto);
+        return null;
+//        Page<CurrentAccount> currentAccounts = bankAccountRepository.findAll(PageRequest.of(page, size));
+//        return currentAccounts.map(bankAccountMapper::toDto);
     }
 
     @Override
     public Page<SavingAccountDto> getSavingAccounts(int page, int size) {
-        Page<SavingAccount> savingAccounts = bankAccountRepository.findAll(PageRequest.of(page, size));
-        return savingAccounts.map(bankAccountMapper::toDto);
+        return null;
+//        Page<SavingAccount> savingAccounts = bankAccountRepository.findAll(PageRequest.of(page, size));
+//        return savingAccounts.map(bankAccountMapper::toDto);
     }
 
     @Override
@@ -126,7 +130,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
+    @Transactional
     public void credit(CreateOperationDto  operationDto) {
+
         BankAccount bankAccount = getEntity(operationDto.getAccountId());
         Operation operation = makeOperation(operationDto, OperationType.CREDIT);
         bankAccount.setBalance(bankAccount.getBalance() + operation.getAmount());
@@ -134,7 +140,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     private Operation makeOperation(CreateOperationDto operationDto, OperationType type) {
+        BankAccount account = getEntity(operationDto.getAccountId());
         Operation operation = new Operation();
+        operation.setBankAccount(account);
         operation.setAmount(operationDto.getAmount());
         operation.setDescription(operationDto.getDescription());
         operation.setType(type);
@@ -143,15 +151,22 @@ public class BankAccountServiceImpl implements BankAccountService {
     }
 
     @Override
+    @Transactional
     public void transfer(String fromId, String toId, double amount) {
-        BankAccount fromAccount = getEntity(fromId);
-        BankAccount toAccount = getEntity(toId);
-        if (fromAccount.getBalance() < amount)
-            throw new InsufficientBalanceException("Insufficient balance");
-        fromAccount.setBalance(fromAccount.getBalance() - amount);
-        toAccount.setBalance(toAccount.getBalance() + amount);
-        bankAccountRepository.save(fromAccount);
-        bankAccountRepository.save(toAccount);
+//        Doing a credit and debit operations
+        debit(CreateOperationDto
+                .builder()
+                .accountId(fromId)
+                .amount(amount)
+                .description("Transfer to " + toId)
+                .build());
+
+        credit(CreateOperationDto
+                .builder()
+                .accountId(toId)
+                .amount(amount)
+                .description("Transfer from " + fromId)
+                .build());
     }
 
     @Override
@@ -162,8 +177,11 @@ public class BankAccountServiceImpl implements BankAccountService {
 
         return AccountHistoryDto.builder()
                 .id(bankAccount.getId())
+                .customer(customerMapper.toCustomerDto(bankAccount.getCustomer()))
                 .operations(operations.map(operationMapper::toOperationDto))
                 .balance(bankAccount.getBalance())
+                .status(bankAccount.getStatus())
+                .currency(bankAccount.getCurrency())
                 .build();
     }
 }
